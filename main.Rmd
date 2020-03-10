@@ -58,10 +58,17 @@ This dataset is about classification of radar returns from the ionosphere. This 
 
 Received signals were processed using an autocorrelation function whose arguments are the time of a pulse and the pulse number. There were 17 pulse numbers for the Goose Bay system. Instances in this databse are described by 2 attributes per pulse number, corresponding to the complex values returned by the function resulting from the complex electromagnetic signal.
 
-## Attribute Information:
+* Number of Instances: 
 
-* All 34 are continuous
-* The 35th attribute is either "good" or "bad" according to the definition summarized above. This is a binary classification task. 
+351 observations
+
+* Attribute Information: 
+
+All 34 are continuous. The 35th attribute is either "good" or "bad" according to the definition summarized above. This is a binary classification task.
+
+* Missing Values:
+
+None
 
 ## Relevant Paper
 
@@ -90,8 +97,9 @@ library(MLmetrics) # for calculating accuracy
 Import the dataset.
 
 ```{r}
-german <- read.csv("german_credit_data.csv")
-head(german)
+ionos <- read.csv("ionosphere.data", header = F)
+head(ionos)
+colnames(ionos) <- c(paste0("radar", 1:34), "return")
 ```
 
 # Data Wrangling
