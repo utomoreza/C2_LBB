@@ -20,19 +20,19 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction {#intro}
 
-This article aims to accomplish [Classification in Machine Learning 1](https://algorit.ma/course/classification-1/) course at Algoritma. The dataset used is obtained from [the University of California at Irvine Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/Connectionist+Bench+(Sonar,+Mines+vs.+Rocks)), "Connectionist Bench (Sonar, Mines vs. Rocks)". You could see the source code fully in my GitHub account [here](https://github.com/utomoreza/C1_LBB).
+This article aims to accomplish [Classification in Machine Learning 2](https://algorit.ma/course/classification-2/) course at Algoritma. The dataset used is obtained from [the University of California at Irvine Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/Ionosphere), "Ionosphere". You could see the source code fully in my GitHub account [here](https://github.com/utomoreza/C2_LBB).
 
 ## Aim
 
-The goal is to model a prediction to decide between mines and rocks based on sonar signals data.
+The goal is to model a prediction to decide between "Good" and "Bad" radar returns.
 
 ## Objectives
 
-1. To compare between Logistic Regression and K-nearest neigbors performance
+1. To compare the performance among Naive Bayes, Decision Tree, and Random Forest
 
 2. To assess the models by a binary classification metric, i.e. confusion matrix.
 
-3. To interpretate the model (only for Logistic Regression)
+**3. To interpretate the model (only for Logistic Regression)**
 
 4. To test the model using dataset test and discuss the results
 
@@ -54,10 +54,19 @@ This article is arranged as follows.
 
 ## Content {#content}
 
+This dataset is about classification of radar returns from the ionosphere. This radar data was collected by a system in Goose Bay, Labrador. This system consists of a phased array of 16 high-frequency antennas with a total transmitted power on the order of 6.4 kilowatts. See the paper for more details. The targets were free electrons in the ionosphere. "Good" radar returns are those showing evidence of some type of structure in the ionosphere. "Bad" returns are those that do not; their signals pass through the ionosphere.
 
+Received signals were processed using an autocorrelation function whose arguments are the time of a pulse and the pulse number. There were 17 pulse numbers for the Goose Bay system. Instances in this databse are described by 2 attributes per pulse number, corresponding to the complex values returned by the function resulting from the complex electromagnetic signal.
+
+## Attribute Information:
+
+* All 34 are continuous
+* The 35th attribute is either "good" or "bad" according to the definition summarized above. This is a binary classification task. 
 
 ## Relevant Paper
 
+Sigillito, V. G., Wing, S. P., Hutton, L. V., \& Baker, K. B. (1989). Classification of radar returns from the ionosphere using neural networks. Johns Hopkins APL Technical Digest, 10, 262-266.
+[Web Link](http://rexa.info/paper/e3d70c8df030be78ab0ea867ef824a9402943eea)
 
 # Preparation {#prep}
 
@@ -81,23 +90,24 @@ library(MLmetrics) # for calculating accuracy
 Import the dataset.
 
 ```{r}
-german <- read.csv("german.data", header = F, sep = " ")
+german <- read.csv("german_credit_data.csv")
 head(german)
-  ```
-
-Since the dataset originally have no any column name, we should set it. As described in [Introduction](#content), the dataset consists of 60 numbers of energy and 1 target variable. Therefore, for such 60 numbers, we could name them as `energy1`, `energy`, so on and so forth, and for the target, we could simply name it as `type`.
-
-```{r}
-colnames(sonar) <- c(paste0("energy",c(1:60)), "type")
-head(sonar)
 ```
 
 # Data Wrangling
 
-Firstly, let's check if NA exists.
+First of all, let's check the data type of each column.
 
 ```{r}
-anyNA(sonar)
+str(german)
+```
+
+As seen above, the `X` column means nothing but the indices of data frame. Therefore, we do not need it any longer. Meanwhile, all variables
+
+From `head()` function above, simply we can see that NA values exist. Let's their proportion.
+
+```{r}
+german %>% is.na() %>% colSums()
 ```
 
 Unsurprisingly, as stated in the UCI Repository that the dataset does not contain missing values, we clearly did not find any NA value. Next, let's see the dataset structure.
