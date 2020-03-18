@@ -100,6 +100,7 @@ Import the dataset.
 ionos <- read.csv("ionosphere.data", header = F)
 head(ionos)
 colnames(ionos) <- c(paste0("radar", 1:34), "return")
+head(ionos)
 ```
 
 # Data Wrangling
@@ -107,24 +108,32 @@ colnames(ionos) <- c(paste0("radar", 1:34), "return")
 First of all, let's check the data type of each column.
 
 ```{r}
-str(german)
+str(ionos)
 ```
 
-As seen above, the `X` column means nothing but the indices of data frame. Therefore, we do not need it any longer. Meanwhile, all variables
-
-From `head()` function above, simply we can see that NA values exist. Let's their proportion.
+All are in approppriate data type. But, as seen above, we should suspect the `radar1` and `radar2` columns as it seems they only have value of 1 or 0. Let's explore both.
 
 ```{r}
-german %>% is.na() %>% colSums()
+unique(ionos$radar1)
+plot(ionos$radar1)
+unique(ionos$radar2)
+plot(ionos$radar2)
 ```
 
-Unsurprisingly, as stated in the UCI Repository that the dataset does not contain missing values, we clearly did not find any NA value. Next, let's see the dataset structure.
+Bingo! As we've suspected, they only consist of 1 or 0. It's uninformative since, in the  [Metadata](#content), the independent variables should be in continuous form. However, what we've found just now, there exist two predictors which contradict the initial declaration. Therefore, we should drop both `radar1` and `radar2` columns.
 
 ```{r}
-str(sonar)
+ionos <- ionos[,c(-1,-2)]
+head(ionos)
 ```
 
-All variables have their matched data type. Good. Now, move on to explore the dataset.
+Nice. Now, let's check whether any NA exists.
+
+```{r}
+anyNA(ionos)
+```
+
+Unsurprisingly, no NA exists since the dataset [source](https://archive.ics.uci.edu/ml/datasets/Ionosphere) also said so. Now, move on to explore the dataset.
 
 # Exploratory Data Analysis
 
@@ -132,14 +141,14 @@ Here, we're going to check the proportion of target variable and whether multico
 
 ## Target Variable Proportion
 
-We'd like to have adequately balanced proportion in each class of the target variable. Our target variable is `type`. Let's see its proportion.
+Firstly, let's check the proportion of target variable.
 
 ```{r}
-table(sonar$type)
-prop.table(table(sonar$type))
+table(ionos$return)
+prop.table(table(ionos$return))
 ```
 
-Nice. Both sides have sufficiently balanced proportion. So, we can move on to check the multicollinearity.
+The proportion is not that balanced. Thus, in order to minimize any undesired result due to this unbalanced proportion later in model evaluation, it's recommended to upscale the proportion prior to modelling. Somee're going
 
 ## Multicollinearity {#multi}
 
